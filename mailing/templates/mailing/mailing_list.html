@@ -1,0 +1,14 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <a class="btn btn-primary mb-3" href="{% url 'mailing:MailingCreate' %}">Создать рассылку</a>
+        {% for mailing in object_list %}
+            <p>{{ mailing.message }}, {{ mailing.start_time }}, {{ mailing.end_time }}, {{ mailing.get_status_display }} </p>
+           <p> <a class="btn btn-secondary btn-sm" href="{% url 'mailing:MailingDetail' mailing.pk %}">Подробнее</a>
+            <a class="btn btn-warning btn-sm" href="{% url 'mailing:MailingUpdate' mailing.pk %}">Редактировать</a>
+            <a class="btn btn-danger btn-sm" href="{% url 'mailing:MailingDelete' mailing.pk %}">Удалить</a> </p>
+
+      {% endfor %}
+    </div>
+{% endblock %}

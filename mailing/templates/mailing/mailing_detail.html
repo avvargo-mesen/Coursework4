@@ -1,0 +1,20 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <a href="{% url 'mailing:MailingDetail' mailing.pk %}">Карточка рассылки</a>
+            <p>Сообщение: {{ mailing.message }} </p>
+            <p>Начало: {{ mailing.start_time }} </p>
+            <p>Конец: {{ mailing.end_time }} </p>
+            <p>Статус: {{ mailing.get_status_display }} </p>
+            <p>Получатели:</p>
+            <ul>
+              {% for client in object.recipients.all %}
+                   <li>{{ client.email }} ({{ client.full_name }})</li>
+                  {% endfor %}
+            </ul>
+           <p><a class="btn btn-secondary btn-sm" href="{% url 'mailing:MailingList' %}">Назад</a>
+            <a class="btn btn-warning btn-sm" href="{% url 'mailing:MailingUpdate' mailing.pk %}">Редактировать</a>
+            <a class="btn btn-danger btn-sm" href="{% url 'mailing:MailingDelete' mailing.pk %}">Удалить</a> </p>
+    </div>
+{% endblock %}

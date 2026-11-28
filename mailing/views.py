@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import Mailing, Client, Message
-from .forms import ClientForm, MessageForm
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from .forms import ClientForm, MessageForm, MailingForm
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 
 # Create your views here.
@@ -41,7 +41,7 @@ class ClientUpdateView(UpdateView):
 class ClientDeleteView(DeleteView):
     model = Client
     template_name = 'mailing/client_confirm_delete.html'
-    success_url = reverse_lazy('mailing:MessageList')
+    success_url = reverse_lazy('mailing:ClientList')
 
 #Сообщения
 
@@ -71,3 +71,42 @@ class MessageDeleteView(DeleteView):
     model = Message
     template_name = 'mailing/message_confirm_delete.html'
     success_url = reverse_lazy('mailing:MessageList')
+
+#Рассылка
+
+class MailingListView(ListView):
+    model = Mailing
+    template_name = 'mailing/mailing_list.html'
+
+class MailingCreateView(CreateView):
+    model = Mailing
+    template_name = 'mailing/mailing_form.html'
+    form_class = MailingForm
+    success_url = reverse_lazy('mailing:MailingList')
+
+    def form_valid(self, form):
+        if self.request.user.is_authenticated:
+            form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+class MailingUpdateView(UpdateView):
+    model = Mailing
+    template_name = 'mailing/mailing_form.html'
+    form_class = MailingForm
+    success_url = reverse_lazy('mailing:MailingList')
+
+
+class MailingDeleteView(DeleteView):
+    model = Mailing
+    template_name = 'mailing/mailing_confirm_delete.html'
+    success_url = reverse_lazy('mailing:MailingList')
+
+class MailingDetailView(DetailView):
+    model = Mailing
+    template_name = 'mailing/mailing_detail.html'
+    context_object_name = 'mailing'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        obj.update_status()
+        return obj
