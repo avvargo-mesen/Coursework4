@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Mailing, Client
-from .forms import ClientForm
+from .models import Mailing, Client, Message
+from .forms import ClientForm, MessageForm
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
@@ -13,6 +13,8 @@ def home(request):
         'unique_clients': Client.objects.count(),
         }
     return render(request, 'mailing/home.html', context)
+
+# Клиенты
 
 class ClientListView(ListView):
     model = Client
@@ -39,4 +41,33 @@ class ClientUpdateView(UpdateView):
 class ClientDeleteView(DeleteView):
     model = Client
     template_name = 'mailing/client_confirm_delete.html'
-    success_url = reverse_lazy('mailing:ClientList')
+    success_url = reverse_lazy('mailing:MessageList')
+
+#Сообщения
+
+class MessageListView(ListView):
+    model = Message
+    template_name = 'mailing/message_list.html'
+
+class MessageCreateView(CreateView):
+    model = Message
+    template_name = 'mailing/message_form.html'
+    form_class = MessageForm
+    success_url = reverse_lazy('mailing:MessageList')
+
+    def form_valid(self, form):
+        if self.request.user.is_authenticated:
+            form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+class MessageUpdateView(UpdateView):
+    model = Message
+    template_name = 'mailing/message_form.html'
+    form_class = MessageForm
+    success_url = reverse_lazy('mailing:MessageList')
+
+
+class MessageDeleteView(DeleteView):
+    model = Message
+    template_name = 'mailing/message_confirm_delete.html'
+    success_url = reverse_lazy('mailing:MessageList')
